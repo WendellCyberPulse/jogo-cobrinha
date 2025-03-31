@@ -3,13 +3,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const ctx = canvas.getContext("2d");
     const restartBtn = document.getElementById("restart-btn");
     const scoreDisplay = document.getElementById("score");
-    const box = 20;
+    const controls = document.getElementById("controls");
+
+    const box = 15;
     let snake, food, dx, dy, score, record, game;
 
     function initGame() {
-        snake = [{ x: 200, y: 200 }, { x: 180, y: 200 }, { x: 160, y: 200 }];
+        snake = [{ x: 150, y: 150 }, { x: 135, y: 150 }, { x: 120, y: 150 }];
         food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
-        dx = 20;
+        dx = box;
         dy = 0;
         score = 0;
         record = localStorage.getItem("record") || 0;
@@ -46,12 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function drawSnakePart(snakePart, index) {
-        ctx.fillStyle = index === 0 ? "#ff0" : "#33ff33";
+        ctx.fillStyle = index === 0 ? "black" : "#555";
         ctx.fillRect(snakePart.x, snakePart.y, box, box);
     }
 
     function drawFood() {
-        ctx.fillStyle = "#f00";
+        ctx.fillStyle = "#111";
         ctx.fillRect(food.x, food.y, box, box);
     }
 
@@ -78,6 +80,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateScore() {
         scoreDisplay.innerHTML = `Score: ${score} | Recorde: ${record}`;
+    }
+
+    // Verifica se está acessando via celular
+    function detectMobile() {
+        return /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+    }
+
+    if (detectMobile()) {
+        controls.style.display = "flex";
+
+        document.getElementById("up").addEventListener("click", () => {
+            if (dy === 0) { dx = 0; dy = -box; }
+        });
+
+        document.getElementById("down").addEventListener("click", () => {
+            if (dy === 0) { dx = 0; dy = box; }
+        });
+
+        document.getElementById("left").addEventListener("click", () => {
+            if (dx === 0) { dx = -box; dy = 0; }
+        });
+
+        document.getElementById("right").addEventListener("click", () => {
+            if (dx === 0) { dx = box; dy = 0; }
+        });
     }
 
     initGame();
