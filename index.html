@@ -1,15 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
-    <link rel="stylesheet" type="text/css" href="./style/style.css">
+    <title>Snake Nokia</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <canvas id="game-board" width="400" height="400"></canvas>
-    <div id="score"></div>
-    <button id="restart-btn" style="display: none;">Reiniciar</button>
-    <script src="./script/script.js"></script>
+    <div class="nokia-screen">
+        <canvas id="game-board" width="300" height="300"></canvas>
+        <div id="score">Score: 0 | Recorde: 0</div>
+        <button id="restart-btn">Reiniciar</button>
+    </div>
+
+    <!-- Controles Touch para Mobile -->
+    <div id="controls">
+        <button id="up">▲</button>
+        <div class="horizontal-buttons">
+            <button id="left">◀</button>
+            <button id="down">▼</button>
+            <button id="right">▶</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
+
