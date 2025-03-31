@@ -1,45 +1,53 @@
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("game-board");
     const ctx = canvas.getContext("2d");
+    const restartBtn = document.getElementById("restart-btn");
+    const scoreDisplay = document.getElementById("score");
     const box = 20;
-    let snake = [{ x: 200, y: 200 }, { x: 180, y: 200 }, { x: 160, y: 200 }];
-    let food = generateFood();
-    let dx = box;
-    let dy = 0;
-    let score = 0;
-    let changingDirection = false;
+    let snake, food, dx, dy, score, record, game;
+
+    function initGame() {
+        snake = [{ x: 200, y: 200 }, { x: 180, y: 200 }, { x: 160, y: 200 }];
+        food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
+        dx = 20;
+        dy = 0;
+        score = 0;
+        record = localStorage.getItem("record") || 0;
+        restartBtn.style.display = "none";
+        game = setInterval(draw, 160);
+        updateScore();
+    }
 
     document.addEventListener("keydown", changeDirection);
+    restartBtn.addEventListener("click", initGame);
 
     function changeDirection(event) {
-        if (changingDirection) return;
-        changingDirection = true;
-
         const keyPressed = event.keyCode;
-        if (keyPressed === 37 && dx === 0) { dx = -box; dy = 0; }
-        if (keyPressed === 38 && dy === 0) { dx = 0; dy = -box; }
-        if (keyPressed === 39 && dx === 0) { dx = box; dy = 0; }
-        if (keyPressed === 40 && dy === 0) { dx = 0; dy = box; }
+        if (keyPressed === 37 && dx !== box) { dx = -box; dy = 0; }
+        if (keyPressed === 38 && dy !== box) { dx = 0; dy = -box; }
+        if (keyPressed === 39 && dx !== -box) { dx = box; dy = 0; }
+        if (keyPressed === 40 && dy !== -box) { dx = 0; dy = box; }
     }
 
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawFood();
         snake.forEach(drawSnakePart);
+        drawFood();
         moveSnake();
-        changingDirection = false;
         if (isGameOver()) {
             clearInterval(game);
-            alert("Game Over! Score: " + score);
+            if (score > record) {
+                record = score;
+                localStorage.setItem("record", record);
+            }
+            restartBtn.style.display = "block";
         }
-        drawScore();
+        updateScore();
     }
 
     function drawSnakePart(snakePart, index) {
-        ctx.fillStyle = index === 0 ? "#ff0" : "#0f0"; // Cabeça amarela, corpo verde
+        ctx.fillStyle = index === 0 ? "#ff0" : "#33ff33";
         ctx.fillRect(snakePart.x, snakePart.y, box, box);
-        ctx.strokeStyle = "#000";
-        ctx.strokeRect(snakePart.x, snakePart.y, box, box);
     }
 
     function drawFood() {
@@ -52,21 +60,10 @@ document.addEventListener("DOMContentLoaded", () => {
         snake.unshift(head);
         if (head.x === food.x && head.y === food.y) {
             score += 10;
-            food = generateFood();
+            food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
         } else {
             snake.pop();
         }
-    }
-
-    function generateFood() {
-        let newFood;
-        do {
-            newFood = {
-                x: Math.floor(Math.random() * 20) * box,
-                y: Math.floor(Math.random() * 20) * box,
-            };
-        } while (snake.some(part => part.x === newFood.x && part.y === newFood.y));
-        return newFood;
     }
 
     function isGameOver() {
@@ -79,9 +76,9 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    function drawScore() {
-        document.getElementById("score").innerHTML = "Score: " + score;
+    function updateScore() {
+        scoreDisplay.innerHTML = `Score: ${score} | Recorde: ${record}`;
     }
 
-    const game = setInterval(draw, 160);
+    initGame();
 });
